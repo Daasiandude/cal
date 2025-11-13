@@ -132,6 +132,18 @@
             text-shadow: 0 0 8px var(--primary-glow-color);
             transform: scale(1.1);
         }
+        
+        /* Navigation Button Active Style for SVG (New) */
+        .nav-button-active svg {
+            color: white; /* Ensure the fill/stroke is white */
+            background-color: var(--primary-glow-color);
+            box-shadow: 0 0 10px var(--primary-glow-color);
+            transform: scale(1.05);
+        }
+        .nav-button-active svg path, .nav-button-active svg polyline, .nav-button-active svg line {
+            stroke: white; /* For stroke-based icons */
+        }
+
 
         /* Full-screen visualizer layout */
         #nowPlayingContent {
@@ -154,6 +166,11 @@
                 hsl(300, 100%, 50%), 
                 hsl(360, 100%, 50%));
         }
+        
+        /* Custom Vertical Slider Style for EQ (Placeholder/Example) */
+        .vertical-slider {
+             height: 8px !important; 
+        }
 
     </style>
 </head>
@@ -163,20 +180,47 @@
     <input type="file" id="audioFileInput" accept="audio/*" multiple style="display: none;">
 
     <header class="p-4 flex items-center justify-between z-20 sticky top-0 bg-white/90 backdrop-blur-md border-b border-gray-200">
+        
         <h1 class="text-2xl font-black text-gray-900 flex items-center">
             <i class="ph ph-headphones-fill mr-2" style="color: var(--primary-glow-color);"></i> Cal Music
         </h1>
-        <nav class="flex space-x-4">
-            <button class="nav-btn p-2 rounded-lg transition text-gray-600 hover:text-gray-800" data-view="nowPlayingContent" onclick="changeView('nowPlayingContent')">
-                <i class="ph ph-waveform-fill text-2xl"></i>
+        
+        <nav class="flex space-x-3 items-center">
+            <button class="nav-btn p-3 rounded-full transition text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200" data-view="settingsView" onclick="changeView('settingsView')">
+                <svg id="settingsIconSvg" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="4" rx="2"></rect>
+                    <rect x="2" y="10" width="20" height="4" rx="2"></rect>
+                    <line x1="18" y1="12" x2="18" y2="12"></line>
+                    <rect x="2" y="16" width="20" height="4" rx="2"></rect>
+                    <line x1="6" y1="6" x2="6" y2="6"></line>
+                    <line x1="12" y1="18" x2="12" y2="18"></line>
+                </svg>
             </button>
-            <button class="nav-btn p-2 rounded-lg transition text-gray-600 hover:text-gray-800" data-view="playlistView" onclick="changeView('playlistView')">
-                <i class="ph ph-list-numbers-fill text-2xl"></i>
+            
+            <div class="h-6 w-px bg-gray-300"></div>
+
+            <button class="nav-btn p-3 rounded-full transition text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200" data-view="nowPlayingContent" onclick="changeView('nowPlayingContent')">
+                <svg id="waveformIconSvg" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="2" x2="12" y2="22"></line>
+                    <line x1="6" y1="7" x2="6" y2="17"></line>
+                    <line x1="18" y1="9" x2="18" y2="15"></line>
+                    <line x1="3" y1="11" x2="3" y2="13"></line>
+                    <line x1="21" y1="11" x2="21" y2="13"></line>
+                </svg>
             </button>
-            <button class="nav-btn p-2 rounded-lg transition text-gray-600 hover:text-gray-800" data-view="settingsView" onclick="changeView('settingsView')">
-                <i class="ph ph-sliders-horizontal-fill text-2xl"></i>
+            
+            <button class="nav-btn p-3 rounded-full transition text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200" data-view="playlistView" onclick="changeView('playlistView')">
+                 <svg id="playlistIconSvg" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
             </button>
         </nav>
+        
         <button onclick="clearPlaylistAndStorage()" 
                 class="p-2 rounded-lg hover:bg-red-100 transition text-red-500" 
                 title="Clear ALL local data and playlist">
@@ -190,18 +234,18 @@
                 
                 <canvas id="audioVisualizer" class="absolute inset-0 w-full h-full opacity-90"></canvas>
                 
-                <div id="nowPlayingArtAndInfo" class="relative z-20 flex flex-col items-center justify-center text-center max-w-lg">
-                    <p id="currentArtist" class="text-xl font-semibold mb-1 transition-colors text-gray-200 text-shadow-lg" style="color: var(--primary-glow-color);">
+                <div id="nowPlayingArtAndInfo" class="relative z-20 flex flex-col items-center justify-center text-center px-4 max-w-lg">
+                    <p id="currentArtist" class="text-sm sm:text-lg font-semibold mb-1 transition-colors text-gray-200 text-shadow-lg" style="color: var(--primary-glow-color);">
                         Offline Mode
                     </p>
-                    <h2 id="currentTitle" class="text-3xl md:text-6xl font-extrabold mb-2 leading-tight text-white text-shadow-lg">
+                    <h2 id="currentTitle" class="text-2xl sm:text-4xl lg:text-6xl font-extrabold mb-1 leading-tight text-white text-shadow-lg">
                         CAL MUSIC
                     </h2>
-                    <p id="currentAlbum" class="text-lg text-gray-300 text-shadow-lg">
+                    <p id="currentAlbum" class="text-xs sm:text-base text-gray-300 text-shadow-lg">
                         Load files to build your console.
                     </p>
                 </div>
-            </div>
+                </div>
         </section>
 
         <section id="playlistView" class="view-section custom-scrollbar pt-4">
@@ -264,6 +308,12 @@
                         <input type="range" id="intensitySlider" min="0" max="100" value="30" oninput="updateStaticLighting()">
                     </div>
                     
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-300">
+                        <label for="rainbowToggle" class="text-gray-700 font-medium">Rainbow Shift Mode (Dynamic)</label>
+                        <button id="rainbowToggle" onclick="toggleRainbowMode()" class="toggle-btn px-4 py-2 rounded-full font-medium text-sm transition text-white bg-red-500 hover:bg-red-400">
+                            OFF
+                        </button>
+                    </div>
                     <div class="flex items-center justify-between pt-4 border-t border-gray-300">
                         <label for="dynamicLightingToggle" class="text-gray-700 font-medium">Visualizer Color Sync (Bass Shift)</label>
                         <button id="dynamicLightingToggle" onclick="toggleDynamicLighting()" class="toggle-btn px-4 py-2 rounded-full font-medium text-sm text-white transition bg-gray-800 hover:bg-gray-700">
@@ -393,7 +443,10 @@
     let repeatMode = 'off'; 
     let isShuffle = false;
     let db; // IndexedDB instance
-    let isDynamicLighting = true; // NEW: Controls visualizer color shift
+    let isDynamicLighting = true; // Controls visualizer color shift
+    let isRainbowMode = false; // NEW: Controls constant hue rotation
+    let rainbowFrameId = null; // NEW: Animation frame for rainbow shift
+    let currentRainbowHue = 260; // NEW: Starting hue for rainbow
 
     // --- Audio Context and Visualizer Variables ---
     let audioContext;
@@ -435,6 +488,7 @@
     const saturationSlider = document.getElementById('saturationSlider');
     const intensitySlider = document.getElementById('intensitySlider');
     const dynamicLightingToggle = document.getElementById('dynamicLightingToggle');
+    const rainbowToggle = document.getElementById('rainbowToggle'); // NEW
     
     // EQ Sliders
     const eqSliders = {
@@ -443,7 +497,8 @@
         'eqTreble': { freq: 10000, type: 'highshelf', node: null, valueEl: document.getElementById('eqTrebleValue') }
     };
 
-    // --- IndexedDB Management (Unchanged logic for brevity) ---
+    // --- IndexedDB Management ---
+    // NO CHANGES TO DB FUNCTIONS
 
     function openDB() {
         return new Promise((resolve, reject) => {
@@ -458,7 +513,8 @@
             request.onupgradeneeded = (event) => {
                 db = event.target.result;
                 if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                    // keyPath is 'id', object stored contains 'file' (the File/Blob)
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true }); 
                 }
             };
 
@@ -484,7 +540,7 @@
             const store = transaction.objectStore(STORE_NAME);
             
             const dataToSave = {
-                file: track.file, 
+                file: track.file, // This is the actual File object
                 title: track.title,
                 artist: track.artist,
                 album: track.album,
@@ -514,7 +570,9 @@
 
             request.onsuccess = () => {
                 const loadedTracks = request.result.map(track => {
-                    track.fileUrl = URL.createObjectURL(track.file);
+                    // IMPORTANT: The File URL must be created fresh when loaded from DB.
+                    // The old fileUrl would be invalid after a page reload.
+                    track.fileUrl = URL.createObjectURL(track.file); 
                     return track;
                 });
                 console.log(`Loaded ${loadedTracks.length} tracks from DB.`);
@@ -538,6 +596,7 @@
         }
 
         try {
+            // Revoke all current blob URLs
             playlist.forEach(track => {
                 if (track.fileUrl) URL.revokeObjectURL(track.fileUrl);
             });
@@ -552,7 +611,6 @@
                 pauseTrack();
                 renderPlaylist();
                 updateTrackInfo({
-                    // MODIFICATION: Changed 'QUANTUM READY' to 'CAL MUSIC'
                     title: 'CAL MUSIC', 
                     artist: 'Offline Mode',
                     album: 'Load files to build your console.',
@@ -570,7 +628,7 @@
     }
 
 
-    // --- Utility Functions ---
+    // --- Utility Functions (Minor change in changeView to activate 'nowPlayingContent' initially) ---
 
     function formatTime(seconds) {
         if (isNaN(seconds) || seconds < 0) return '0:00';
@@ -597,19 +655,22 @@
         activeView = viewId;
 
         document.querySelectorAll('.nav-btn').forEach(btn => {
-            // Remove glow from all buttons
-            btn.classList.remove('glow-active');
-            btn.querySelector('i').style.color = 'inherit'; // Reset color
+            // Remove active style from all buttons
+            btn.classList.remove('nav-button-active');
             
-            // Add glow to the active button
+            // Add active style to the active button
             if (btn.dataset.view === viewId) {
-                 btn.classList.add('glow-active');
-                 // The general .glow-active class in CSS handles the color for icons
+                 btn.classList.add('nav-button-active');
             }
         });
+        
+        // Ensure Now Playing icon is active on load
+        if (viewId === 'nowPlayingContent') {
+             document.querySelector('[data-view="nowPlayingContent"]').classList.add('nav-button-active');
+        }
     }
 
-    // --- Player Logic (Updated for SVG icons) ---
+    // --- Player Logic (Critical changes for reliability) ---
 
     async function togglePlayPause() {
         if (playlist.length === 0) {
@@ -619,7 +680,8 @@
         
         if (currentTrackIndex === -1) {
             currentTrackIndex = 0;
-            await loadTrack(currentTrackIndex);
+            // Ensure track is loaded before attempting to play
+            await loadTrack(currentTrackIndex); 
         }
 
         if (isPlaying) {
@@ -627,6 +689,7 @@
         } else {
             if (audio.ended) audio.currentTime = 0;
             
+            // Re-check source just in case the initial loadTrack failed or was skipped
             if (!audio.src) {
                 await loadTrack(currentTrackIndex);
             }
@@ -636,7 +699,8 @@
 
     async function playTrack() {
         try {
-            if (audioContext.state === 'suspended') {
+            // CRITICAL FIX: Ensure AudioContext is resumed, especially on initial user interaction
+            if (audioContext && audioContext.state === 'suspended') {
                 await audioContext.resume();
             }
             await audio.play();
@@ -649,10 +713,16 @@
             if (!animationFrameId) updateLoop();
         } catch (error) {
             console.error("Error during playback:", error);
+            // Inform user about common auto-play blocks
             if (error.name === 'NotAllowedError' || error.name === 'NotSupportedError') {
                 showMessageBox(
                     'Playback Blocked',
                     'Your browser requires a direct user click to play audio. Please click "Acknowledge" and then Play again.'
+                );
+            } else if (error.message.includes("failed to fetch")) {
+                 showMessageBox(
+                    'Playback Error',
+                    'Could not load the track file. The local file reference might be corrupted. Try reloading the track.'
                 );
             }
             isPlaying = false;
@@ -673,22 +743,33 @@
         currentArtistEl.textContent = track.artist || 'Unknown Artist';
         currentAlbumEl.textContent = track.album || 'Unknown Album';
         
-        // MODIFICATION: Changed 'Quantum Console' to 'Cal Music' in document title
         document.title = `${track.title} - ${track.artist} | Cal Music`; 
     }
 
+    // CRITICAL FIX: Improved loadTrack to handle Blob URL lifecycle correctly
     async function loadTrack(index) {
         if (index < 0 || index >= playlist.length) return;
 
         pauseTrack(); 
         
+        const prevTrack = playlist[currentTrackIndex];
         currentTrackIndex = index;
         const track = playlist[currentTrackIndex];
+
+        // 1. Revoke the OLD Blob URL to free memory
+        if (prevTrack && prevTrack.fileUrl && prevTrack.fileUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(prevTrack.fileUrl);
+        }
         
-        const oldSrc = audio.src;
-        audio.src = '';
-        if (oldSrc && oldSrc.startsWith('blob:')) {
-            URL.revokeObjectURL(oldSrc);
+        // 2. CRITICAL: Recreate the Blob URL for the new track using the stored File object
+        // This ensures the URL is valid, as Blob URLs expire when the document is reloaded.
+        if (track.file) {
+            track.fileUrl = URL.createObjectURL(track.file);
+        } else {
+            console.error("Track object missing file data:", track);
+            showMessageBox('Track Data Missing', 'Failed to load track data from local storage. Skipping track.');
+            skipTrack(1); // Try next track
+            return;
         }
 
         updateTrackInfo(track);
@@ -707,11 +788,17 @@
                 audio.removeEventListener('canplaythrough', onCanPlay);
                 audio.removeEventListener('error', onError);
                 
-                seekSlider.max = audio.duration;
-                durationEl.textContent = formatTime(audio.duration);
+                if (isNaN(audio.duration) || audio.duration === Infinity) {
+                    console.warn(`Duration for ${track.title} is unknown or infinity.`);
+                    durationEl.textContent = '??';
+                    seekSlider.max = 0;
+                } else {
+                    seekSlider.max = audio.duration;
+                    durationEl.textContent = formatTime(audio.duration);
+                }
+                
                 seekSlider.value = 0;
-
-                loadVolume();
+                loadVolume(); // Re-apply volume
 
                 resolve();
             };
@@ -721,8 +808,19 @@
                 resolved = true;
                 audio.removeEventListener('canplaythrough', onCanPlay);
                 audio.removeEventListener('error', onError);
-                console.error("Audio loading error:", e);
-                showMessageBox('Playback Error', `Could not load track: ${track.title}. The file format may not be supported by your browser.`);
+                
+                console.error(`Audio loading error for ${track.title}:`, e);
+                showMessageBox('Playback Error', `Could not load track: ${track.title}. The file format may not be supported or the file is corrupted. Skipping...`);
+                
+                // Immediately try to skip to the next track on critical error
+                const nextIndex = currentTrackIndex + 1;
+                if (nextIndex < playlist.length) {
+                    loadTrack(nextIndex).then(() => {
+                        if (isPlaying) playTrack();
+                    });
+                } else {
+                    pauseTrack();
+                }
                 resolve(); 
             };
 
@@ -732,6 +830,7 @@
             setTimeout(() => {
                 if (!resolved) {
                     console.warn(`Load timeout for ${track.title}. Proceeding anyway.`);
+                    // Resolve even on timeout to not block the player UI
                     onCanPlay(); 
                 }
             }, 5000); 
@@ -750,6 +849,7 @@
             if (newIndex < 0) newIndex = playlist.length - 1;
         }
         
+        // Prevent infinite looping on single track skip when only one track exists
         if (playlist.length === 1 && delta !== 0 && repeatMode !== 'one') {
             audio.currentTime = 0;
             if(isPlaying) playTrack();
@@ -770,7 +870,7 @@
         }
     });
 
-    // --- Audio File & Metadata Handling (Unchanged for brevity) ---
+    // --- Audio File & Metadata Handling (No changes) ---
 
     audioFileInput.addEventListener('change', async (event) => {
         const files = Array.from(event.target.files);
@@ -831,6 +931,7 @@
                 
                 // 3. Prepare for playback
                 track.id = id;
+                // Create Blob URL immediately after saving
                 track.fileUrl = URL.createObjectURL(track.file); 
                 newTracks.push(track);
                 successCount++;
@@ -897,7 +998,7 @@
         });
     }
 
-    // --- Transport Control Toggles (Updated for glow-active and SVG) ---
+    // --- Transport Control Toggles (No changes) ---
 
     function toggleShuffle() {
         isShuffle = !isShuffle;
@@ -926,7 +1027,7 @@
         }
     }
     
-    // --- LIGHTING CONTROL FUNCTIONS ---
+    // --- LIGHTING CONTROL FUNCTIONS (No changes) ---
 
     function getHueName(hue) {
         if (hue >= 330 || hue < 30) return 'Red';
@@ -937,6 +1038,52 @@
         if (hue < 330) return 'Magenta';
         return 'Purple';
     }
+    
+    // NEW RAINBOW LOGIC
+    function rainbowLoop() {
+        currentRainbowHue = (currentRainbowHue + 0.5) % 360; // Shift hue slowly
+        
+        // Update ambient hue and primary glow based on the rotating hue
+        document.documentElement.style.setProperty('--ambient-hue', currentRainbowHue.toFixed(0));
+        document.documentElement.style.setProperty('--primary-glow-color', `hsl(${currentRainbowHue}, ${saturationSlider.value}%, 50%)`);
+        
+        // Also update the hue slider thumb to match the current rainbow color
+        hueSlider.style.setProperty('--primary-glow-color', `hsl(${currentRainbowHue}, ${saturationSlider.value}%, 50%)`);
+        
+        // Update the UI text to show the shifting color
+        document.getElementById('hueValue').textContent = `${currentRainbowHue.toFixed(0)}° (${getHueName(parseInt(currentRainbowHue))})`;
+        
+        if (isRainbowMode) {
+            rainbowFrameId = requestAnimationFrame(rainbowLoop);
+        } else {
+             cancelAnimationFrame(rainbowFrameId);
+             rainbowFrameId = null;
+        }
+    }
+
+    function toggleRainbowMode() {
+        isRainbowMode = !isRainbowMode;
+        
+        // Update UI
+        rainbowToggle.textContent = isRainbowMode ? 'ON' : 'OFF';
+        rainbowToggle.classList.toggle('bg-gray-800', isRainbowMode);
+        rainbowToggle.classList.toggle('bg-red-500', !isRainbowMode);
+        rainbowToggle.classList.toggle('hover:bg-gray-700', isRainbowMode);
+        rainbowToggle.classList.toggle('hover:bg-red-400', !isRainbowMode);
+
+        if (isRainbowMode) {
+            // Disable static hue control when rainbow is on
+            hueSlider.disabled = true;
+            currentRainbowHue = parseFloat(hueSlider.value); // Start from current setting
+            rainbowLoop();
+            showMessageBox('Rainbow Shift', 'Rainbow Shift Mode is **ON**. The ambient color is constantly rotating.');
+        } else {
+            // Re-enable static hue control and lock the color to its setting
+            hueSlider.disabled = false;
+            updateStaticLighting();
+            showMessageBox('Rainbow Shift', 'Rainbow Shift Mode is **OFF**. Ambient color is locked to the Base Hue slider.');
+        }
+    }
 
     function toggleDynamicLighting() {
         isDynamicLighting = !isDynamicLighting;
@@ -945,17 +1092,15 @@
         dynamicLightingToggle.classList.toggle('bg-red-500', !isDynamicLighting);
         
         // When turning off, immediately apply the static hue to lock the color
-        if (!isDynamicLighting) {
+        if (!isDynamicLighting && !isRainbowMode) {
              updateStaticLighting();
-             // *** MODIFICATION: Removed the message box for turning OFF dynamic lighting here ***
-        } else {
-             // If turning on, let the visualizer draw loop handle the initial dynamic setting
-             showMessageBox('Visualizer Sync', 'Visualizer Color Sync is **ON**. Color will shift slightly based on bass energy.'); 
-        }
-        
+        } 
     }
     
     function updateStaticLighting() {
+        // If Rainbow is ON, do not let the static sliders change the ambient hue
+        if (isRainbowMode) return; 
+        
         const hue = hueSlider.value;
         const saturation = saturationSlider.value;
         const intensity = intensitySlider.value / 100;
@@ -964,15 +1109,7 @@
         document.documentElement.style.setProperty('--primary-glow-color', `hsl(${hue}, ${saturation}%, 50%)`);
 
         // 2. Update background/ambient variables
-        if (!isDynamicLighting) { 
-            // If dynamic is OFF, lock the ambient hue to the slider value
-            document.documentElement.style.setProperty('--ambient-hue', hue);
-        } else {
-            // If dynamic is ON, the drawVisualizer function will update the hue dynamically.
-            // We ensure the base hue is set in case we haven't started playing yet.
-            document.documentElement.style.setProperty('--ambient-hue', hue);
-        }
-        
+        document.documentElement.style.setProperty('--ambient-hue', hue);
         document.documentElement.style.setProperty('--ambient-saturation', `${saturation}%`);
         document.documentElement.style.setProperty('--ambient-intensity', intensity.toFixed(2));
         
@@ -982,7 +1119,7 @@
         document.getElementById('intensityValue').textContent = `${Math.round(intensity * 100)}%`;
     }
 
-    // --- Audio Context, Visualizer, and EQ Setup (Unchanged for brevity) ---
+    // --- Audio Context, Visualizer, and EQ Setup (No changes) ---
 
     function setupAudioContext() {
         try {
@@ -1068,11 +1205,16 @@
             }
 
             const freqPercent = i / bufferLength;
-            const ambientHue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ambient-hue'));
+            
+            // If rainbow mode is on, use the current rotating hue as the base
+            const baseHue = isRainbowMode 
+                ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ambient-hue'))
+                : parseFloat(hueSlider.value);
+                
             const saturation = getComputedStyle(document.documentElement).getPropertyValue('--ambient-saturation');
             
             // Subtle hue shift across the visualizer bands
-            const hue = ambientHue + (freqPercent * 60) - 30;
+            const hue = baseHue + (freqPercent * 60) - 30;
             
             // Draw bar
             canvasCtx.fillStyle = `hsla(${hue}, ${saturation}, 40%, 0.8)`;
@@ -1085,7 +1227,7 @@
             x += barWidth + 1;
         }
 
-        // --- Dynamic Ambient Lighting Update (MODIFIED for stronger effect) ---
+        // --- Dynamic Ambient Lighting Update ---
         const baseIntensity = parseFloat(intensitySlider.value) / 100;
         
         if (isDynamicLighting) { 
@@ -1097,22 +1239,27 @@
             // Clamp intensity higher (e.g., 1.5 or 150%) to ensure the glow is fully visible on strong beats
             const newIntensity = Math.min(baseIntensity + musicBoost, 1.5); 
             
-            const newHueShift = (avgBass / 255) * 30;
-            
-            const staticHue = parseFloat(hueSlider.value);
+            // Only apply bass-based hue shift if RAINBOW mode is OFF
+            if (!isRainbowMode) {
+                const newHueShift = (avgBass / 255) * 30;
+                const staticHue = parseFloat(hueSlider.value);
+                // Shift ambient hue based on music
+                document.documentElement.style.setProperty('--ambient-hue', (staticHue - newHueShift).toFixed(0));
+            }
 
-            // Shift ambient hue based on music
-            document.documentElement.style.setProperty('--ambient-hue', (staticHue - newHueShift).toFixed(0));
             document.documentElement.style.setProperty('--ambient-intensity', newIntensity.toFixed(2));
         } else {
              // If dynamic is OFF, ensure only base intensity is used
              document.documentElement.style.setProperty('--ambient-intensity', baseIntensity.toFixed(2));
-             // Hue is locked via updateStaticLighting() which ensures it uses hueSlider.value
+             // If dynamic is OFF and Rainbow is OFF, ensure hue is static
+             if (!isRainbowMode) {
+                 document.documentElement.style.setProperty('--ambient-hue', parseFloat(hueSlider.value));
+             }
         }
     }
 
 
-    // --- Time, Seeking, and Volume (Unchanged for brevity) ---
+    // --- Time, Seeking, and Volume (No changes) ---
     
     seekSlider.addEventListener('input', () => {
         currentTimeEl.textContent = formatTime(seekSlider.value);
@@ -1171,7 +1318,7 @@
         updateVolumeIcon(savedVolume);
     }
     
-    // --- Main Update Loop (Unchanged for brevity) ---
+    // --- Main Update Loop (No changes) ---
 
     function updateLoop() {
         if (analyserNode && activeView === 'nowPlayingContent') {
@@ -1189,9 +1336,19 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
         
+        // CRITICAL FIX: Attempt to resume AudioContext early on initialization, 
+        // especially if it was created in 'suspended' state by the browser.
+        if (audioContext && audioContext.state === 'suspended') {
+            // It will be fully resumed upon first user interaction (togglePlayPause/EQ input)
+            audioContext.resume().catch(e => console.warn("Initial AudioContext resume failed (expected if no user interaction):", e));
+        }
+
         // 1. Load initial lighting settings and apply them
         updateStaticLighting(); 
         toggleDynamicLighting(); // Call once to set initial state/text (defaults to ON)
+        
+        // Set initial state for new toggle buttons
+        rainbowToggle.textContent = 'OFF';
         
         // 2. Open Database
         try {
@@ -1209,6 +1366,7 @@
         
         if (playlist.length > 0) {
             currentTrackIndex = 0;
+            // Load track data but DO NOT auto-play
             await loadTrack(0); 
         } else {
              document.getElementById('fileStatus').textContent = 'The console is empty. Use the "Add Tracks" button to load audio files.';
@@ -1222,5 +1380,7 @@
     window.onload = initialize;
 </script>
 </body>
-
 </html>
+
+
+
